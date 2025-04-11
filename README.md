@@ -10,23 +10,31 @@ This is a quick and little project aimed to be a penetration testing tool. It au
 - Login, upload and enable the plugin
 - Generate a link to trigger the plugin code execution
 
+<br />
+
 ## Screenshot
 
-![](img/usage-demo.png)
+![](./img/usage-demo.png)
 
-### Requirements
+<br />
+
+## Requirements
 
 Requires NodeJS `>=18.17`
 
-### Setup
+<br />
+
+## Setup
 
 ```bash
-git clone <>
-cd <folder>
+git clone https://github.com/PTLearnerSec/wp-bruteforce-to-rce.git
+cd wp-bruteforce-to-rce
 npm install
 ```
 
-### Usage
+<br />
+
+## Usage
 
 ***Configuration:***
 
@@ -41,6 +49,8 @@ npm install
         - `concurrencyLimit`: \<integer\> Max number of simultaneous requests
         - `userAgent`: \<string\> The user agent to use in the request
   - `debug`: \<boolean\> Debug mode
+ 
+<br />
 
 ***Run:***
 
@@ -48,12 +58,16 @@ npm install
 node index.js
 ```
 
-### Wordlist
+<br />
+
+## Wordlist
 
 One password list is already in the `wordlist` directory, you can find more in the 
 [SecLists](https://github.com/danielmiessler/SecLists/tree/master/Passwords) repository.
 
-##  Recommendations
+<br />
+
+##  What to learn from this on your own WordPress?
 
 Make user enumeration harder:
 - Restrict access to `/wp-json/`  API REST for non-authenticated users
@@ -62,13 +76,16 @@ Make user enumeration harder:
 
 Make brute forcing harder:
 - Use strong password
-- Disable XLM-RPC if not necessary for backward compatibility
+- Disable ``XLM-RPC`` if not necessary for backward compatibility
 - Watch out for brute force attack by limiting the number of login attempts using IP ban or timeout. Using captcha could also be helpful.
 
 General advice:
 - If you have multiple users, give admin rights only if absolutely necessary
 
-## TODO:
+<br />
+
+## TODO
 
 - Switch method if XML-RPC is disabled
 - Check if a plugin with the same name is already uploaded
+- Maybe more...

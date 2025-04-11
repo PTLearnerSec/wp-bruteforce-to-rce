@@ -1,2 +1,5 @@
-# Dependency directories
+# NodeJS dependency directories
 node_modules/
+
+# IDE project files
+.idea
