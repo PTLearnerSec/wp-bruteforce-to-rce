@@ -39,7 +39,7 @@ async function isXmlRpcEnable(host) {
  * @param {string} xmlData - XML form to call wp.getUsersBlog
  * @param {string} user - User to try
  * @param {string} password - Password to try
- * @returns {{}|{ isValid: boolean, user: string, password: string, isAdmin: boolean }} - Credential
+ * @returns {Promise<{}|{ isValid: boolean, user: string, password: string, isAdmin: boolean }>} - Credential
  */
 async function xmlLogin(host, xmlData, user, password) {
     let credential = { isValid: false }
@@ -146,14 +146,14 @@ async function bruteForcePassword(host, users) {
 }
 
 /**
- * Description placeholder
+ * Use wordlist to brute force users password by calling XML-RPC
  *
  * @async
  * @param {string} host
  * @param {string} xmlGetUsersBlogData - XML data to send
  * @param {string} user - User to try
  * @param {array<string>} wordlist - Chunk of password
- * @param {number} [maxRetry=3] - max retry if error
+ * @param {number} [maxRetry=3] - Max retry if error
  * @returns {Promise<Object.<{}|{ isValid: boolean, user: string, password: string, isAdmin: boolean }>>}
  */
 async function LoginXmlBruteForce(host, xmlGetUsersBlogData, user, wordlist, maxRetry = 3) {
