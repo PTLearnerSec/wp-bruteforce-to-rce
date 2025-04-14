@@ -108,7 +108,7 @@ async function enumUsersById(host, i, users) {
 }
 
 /**
- * Goes throw different methods to enumerate users on WordPress
+ * Goes through different methods to enumerate users on WordPress
  *
  * @async
  * @param {string} host
