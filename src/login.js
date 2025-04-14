@@ -4,7 +4,7 @@ import * as cheerio from 'cheerio'
 
 
 /**
- * Login into WordPress using user credential and returns session cookies
+ * Log into WordPress using user credential and returns session cookies
  *
  * @async
  * @param {string} host
@@ -14,7 +14,7 @@ import * as cheerio from 'cheerio'
  */
 async function login(host, user, password) {
     const body = `log=${ user }&pwd=${password}&wp-submit=Log+in&redirect_to=http%3A%2F%2F${ host }%2Fwp-admin%2F&testcookie=1`
-    let cookie = 'wordpress_test_cookie=WP%20Cookie%20check;'
+    const cookie = 'wordpress_test_cookie=WP%20Cookie%20check;'
     const response = await fetch(host + '/wp-login.php', {
         method: 'POST',
         body,

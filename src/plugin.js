@@ -7,7 +7,7 @@ import * as cheerio from 'cheerio'
 
 
 /**
- * Create zip archive from plugin, the plugin runs when accessing a specific link
+ * Create zip archive from plugin, the plugin is executed when a specific link is accessed
  *
  * @async
  * @param {string} host
@@ -21,7 +21,7 @@ async function generatePlugin(host) {
     }
 
     let plugin = await utils.readFile(filePath)
-    // Replace IP and PORT in plugin
+    // Insert random string into plugin code
     const param = utils.randomString(25)
     const chars = { '{{randomString}}': param }
     let updatedPlugin = utils.strReplace(plugin, chars)
@@ -40,7 +40,7 @@ async function generatePlugin(host) {
 }
 
 /**
- * Description placeholder
+ * Upload plugin and get activation link
  *
  * @async
  * @param {string} host
@@ -100,7 +100,7 @@ async function uploadPlugin(host, cookies) {
 }
 
 /**
- * Enable the plugin on the WordPress website
+ * Enable uploaded plugin on WordPress
  *
  * @async
  * @param {string} host

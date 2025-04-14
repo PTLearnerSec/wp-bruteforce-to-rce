@@ -8,7 +8,7 @@ const appConfig = {
         archivePath: '/plugin/wp-plugin.zip'
     },
     host: {
-        url: ''
+        url: 'http://localhost/wordpress/'
     },
     bruteforce: {
         wordlist: '/wordlist/passwords-1000.txt',
