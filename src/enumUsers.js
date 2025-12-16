@@ -45,7 +45,7 @@ async function enumUsersSitemap(host) {
  * @returns {Promise<array<string>>}
  */
 async function enumUsersApi(host) {
-    const endpoints = ['/wp-json/wp/v2/users', '?rest_route=/wp/v2/users']
+    const endpoints = ['/wp-json/wp/v2/users', '/?rest_route=/wp/v2/users']
     let users = []
 
     for (let endpoint of endpoints) {

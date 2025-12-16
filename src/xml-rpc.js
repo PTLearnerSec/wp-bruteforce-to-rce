@@ -15,7 +15,7 @@ import cliProgress from 'cli-progress'
  */
 async function isXmlRpcEnable(host) {
     try {
-        const xmlGetUsersBlogData = await utils.readFile('./XML/xmlrpc-sayHello.xml')
+        const xmlGetUsersBlogData = await utils.readFile('./xml/xmlrpc-sayHello.xml')
         const response = await fetch(host + '/xmlrpc.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/xml' },
@@ -89,7 +89,7 @@ async function xmlLogin(host, xmlData, user, password) {
  * @returns {Promise<array<{}|{ isValid: boolean, user: string, password: string, isAdmin: boolean }>>}
  */
 async function bruteForcePassword(host, users) {
-    const xmlGetUsersBlogData = await utils.readFile('./XML/xmlrpc-getUsersBlog.xml')
+    const xmlGetUsersBlogData = await utils.readFile('./xml/xmlrpc-getUsersBlog.xml')
     const pathToWordlist = appConfig.app.rootPath + appConfig.bruteforce.wordlist
     const passwordsChunks = await utils.wordlistSplitting(pathToWordlist)
     let admins = []

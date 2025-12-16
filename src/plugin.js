@@ -7,6 +7,22 @@ import * as cheerio from 'cheerio'
 
 
 /**
+ * Check if the user has access to plugins the plugin page
+ *
+ * @async
+ * @param {string} host
+ * @param {string} cookies - Session cookies
+ * @returns {Promise<boolean>} - Returns true if the user has access to the plugins page
+ */
+async function hasPluginAccess(host, cookies) {
+    const res = await fetch(`${ host }/wp-admin/plugins.php`, {
+        headers: { 'Cookie': cookies }
+    })
+
+    return res.status === 200
+}
+
+/**
  * Create zip archive from plugin, the plugin is executed when a specific link is accessed
  *
  * @async
@@ -122,4 +138,4 @@ async function enablePlugin(host, activatePluginLink, cookies, pluginName) {
 }
 
 
-export { generatePlugin, uploadPlugin, enablePlugin }
+export { hasPluginAccess, generatePlugin, uploadPlugin, enablePlugin }
