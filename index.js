@@ -53,6 +53,13 @@ import { appConfig } from './config/appConfig.js'
         console.log(utils.printCheck.success() +
             ` Successfully logged using ${ utils.textColoring(allCredentials[0].user, 'blue') } credentials`)
 
+        // Check if user has the right to access plugins page
+        console.log(`-> Check if ${ utils.textColoring(allCredentials[0].user, 'blue') } has access to plugins`)
+        const hasPluginAccess = await plugin.hasPluginAccess(host, loggedCookies)
+        if (!hasPluginAccess) {
+            utils.exit(0, `${ utils.printCheck.failure() } User does not have access to plugins`)
+        }
+
         // Generate plugin
         console.log(`-> Generating plugin`)
         const triggerUrl = await plugin.generatePlugin(host)
