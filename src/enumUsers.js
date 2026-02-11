@@ -92,9 +92,15 @@ async function enumUsersById(host, i, users) {
         }
 
         const html = await res.text()
-        const $ = await cheerio.load(html)
+        const $ = cheerio.load(html)
+        const bodyClass = $('body').attr('class') || ''
+        const authorMatch = bodyClass.split('author-')[1]
+
+        if (authorMatch) {
+            _users.push(authorMatch.trim().split(' ')[0])
+        }
+
         index++
-        _users.push($('body')[0].attribs.class.split('author-')[1].trim())
         await enumUsersById(host, index, _users)
     } catch (error) {
         if (error.status !== 404) {

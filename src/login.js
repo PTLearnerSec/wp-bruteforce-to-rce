@@ -13,7 +13,13 @@ import * as cheerio from 'cheerio'
  * @returns {Promise<string>} - Session cookies
  */
 async function login(host, user, password) {
-    const body = `log=${ user }&pwd=${password}&wp-submit=Log+in&redirect_to=http%3A%2F%2F${ host }%2Fwp-admin%2F&testcookie=1`
+    const body = new URLSearchParams({
+        log: user,
+        pwd: password,
+        'wp-submit': 'Log in',
+        redirect_to: `${ host }/wp-admin/`,
+        testcookie: '1'
+    })
     const cookie = 'wordpress_test_cookie=WP%20Cookie%20check;'
     const response = await fetch(host + '/wp-login.php', {
         method: 'POST',

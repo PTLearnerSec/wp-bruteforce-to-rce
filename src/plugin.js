@@ -96,7 +96,7 @@ async function uploadPlugin(host, cookies) {
         body
     })
     const text = await postPluginResponse.text()
-    const $_postPluginResponse = await cheerio.load(text)
+    const $_postPluginResponse = cheerio.load(text)
 
     if (!postPluginResponse.ok) {
         console.error(`${ utils.printCheck.failure() } Could not upload plugin, user probably does not have the right`)
@@ -131,7 +131,7 @@ async function enablePlugin(host, activatePluginLink, cookies, pluginName) {
         headers: { 'Cookie': cookies }
     })
     const activatePluginResText = await activatePlugin.text()
-    const $_activatePluginResText = await cheerio.load(activatePluginResText)
+    const $_activatePluginResText = cheerio.load(activatePluginResText)
 
     if ($_activatePluginResText(`[data-slug="${ pluginName }"]`).length === 0) {
         throw new Error(`Plugin activation failed.`)
