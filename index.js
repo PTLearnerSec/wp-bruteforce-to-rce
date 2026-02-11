@@ -5,6 +5,7 @@ import { isXmlRpcEnable, bruteForcePassword  } from './src/xml-rpc.js'
 import { login } from './src/login.js'
 import { checkConfig } from './config/checkConfig.js'
 import { appConfig } from './config/appConfig.js'
+import path from 'path'
 
 
 (async function run() {
@@ -77,11 +78,11 @@ import { appConfig } from './config/appConfig.js'
         console.log(`${ utils.printCheck.success() } Payload available at: ${ triggerUrl }`)
 
         // Remove local zip archive
-        await utils.removeFile(appConfig.app.rootPath + appConfig.app.archivePath)
+        await utils.removeFile(path.join(appConfig.app.rootPath, appConfig.app.archivePath))
 
         utils.exit(0)
     } catch (error) {
-        await utils.removeFile(appConfig.app.rootPath + appConfig.app.archivePath)
+        await utils.removeFile(path.join(appConfig.app.rootPath, appConfig.app.archivePath))
         utils.logging.error(error)
 
         utils.exit(1)

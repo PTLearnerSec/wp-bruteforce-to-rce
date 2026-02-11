@@ -4,7 +4,7 @@ import * as utils from '../lib/utils.js'
 import AdmZip from 'adm-zip'
 import fetch from 'node-fetch'
 import * as cheerio from 'cheerio'
-
+import path from 'path'
 
 /**
  * Check if the user has access to plugins the plugin page
@@ -30,7 +30,8 @@ async function hasPluginAccess(host, cookies) {
  * @returns {Promise<string>} -Url to trigger plugging execution
  */
 async function generatePlugin(host) {
-    const filePath = appConfig.app.rootPath + appConfig.app.pluginFilePath
+    const filePath = path.join(appConfig.app.rootPath, appConfig.app.pluginFilePath)
+
     // Get plugin template
     if (!fs.existsSync(filePath)) {
         throw new Error(`Could not generate plugin, cannot find ${ filePath }`)
@@ -44,7 +45,7 @@ async function generatePlugin(host) {
 
     // Zip plugin
     const zip = new AdmZip()
-    const archivePath = appConfig.app.rootPath + appConfig.app.archivePath
+    const archivePath = path.join(appConfig.app.rootPath, appConfig.app.archivePath)
     zip.addFile('wp-plugin.php', Buffer.from(updatedPlugin), "utf8")
     zip.writeZip(archivePath, (err) => {
         if (err !== null) {
@@ -77,7 +78,7 @@ async function uploadPlugin(host, cookies) {
 
     // Upload plugin
     const endpoint = '/wp-admin/update.php?action=upload-plugin'
-    const archivePath = appConfig.app.rootPath + appConfig.app.archivePath
+    const archivePath = path.join(appConfig.app.rootPath, appConfig.app.archivePath)
     const body = new FormData()
     const blob = new Blob([fs.readFileSync(archivePath)], { type: 'application/zip-compressed' })
 
