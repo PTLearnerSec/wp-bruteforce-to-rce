@@ -118,18 +118,29 @@ async function getUsers(host) {
     console.log(`-> Starting user enumeration ...`)
 
     try {
-        const apiUsers = await enumUsersApi(host)
-        const idUsers = await enumUsersById(host, 1, null)
-        const siteMapUsers = await enumUsersSitemap(host)
+        const [
+            apiUsersRes,
+            idUsersRes,
+            sitemapUsersRes
+        ] = await Promise.allSettled([
+            enumUsersApi(host),
+            enumUsersById(host, 1, null),
+            enumUsersSitemap(host)
+        ])
+
+        const apiUsers = apiUsersRes.status === "fulfilled" ? apiUsersRes.value : []
+        const idUsers = idUsersRes.status === "fulfilled" ? idUsersRes.value : []
+        const siteMapUsers = sitemapUsersRes.status === "fulfilled" ? sitemapUsersRes.value : []
 
         if (!apiUsers.length && !idUsers.length && !siteMapUsers.length) {
             console.error(`${ utils.printCheck.failure() } No user was found`)
-            utils.exit(0)
+            utils.exit(1)
         }
 
         return utils.uniq(apiUsers.concat(idUsers, siteMapUsers))
     } catch (error) {
         utils.logging.error(error)
+        utils.exit(1)
     }
 }
 
