@@ -1,6 +1,7 @@
 import fs from 'fs'
 import * as utils from '../lib/utils.js'
 import { appConfig } from './appConfig.js'
+import path from 'path'
 
 
 /**
@@ -12,10 +13,10 @@ export function checkConfig() {
     let errorMessages = []
 
     // app section
-    if (!fs.existsSync(rootPath + appConfig.app.pluginFilePath)) {
+    if (!fs.existsSync(path.join(rootPath, appConfig.app.pluginFilePath))) {
         errorMessages.push(utils.textColoring('pluginFilePath', 'yellow') +
             " - Could not find or access file to generate plugin: " +
-            utils.textColoring(rootPath + appConfig.app.pluginFilePath, 'yellow')
+            utils.textColoring(path.join(rootPath, appConfig.app.pluginFilePath), 'yellow')
         )
     }
     // host section
@@ -24,10 +25,10 @@ export function checkConfig() {
             utils.textColoring(appConfig.host.url, 'yellow'))
     }
     // bruteforce section
-    if (!fs.existsSync(rootPath + appConfig.bruteforce.wordlist)) {
+    if (!fs.existsSync(path.join(rootPath, appConfig.bruteforce.wordlist))) {
         errorMessages.push(utils.textColoring('wordlist', 'yellow') +
             " - Could not find or access wordlist: "
-            + utils.textColoring(rootPath + appConfig.bruteforce.wordlist, 'yellow')
+            + utils.textColoring(path.join(rootPath, appConfig.bruteforce.wordlist), 'yellow')
         )
     }
     if (typeof(appConfig.bruteforce.concurrencyLimit) !== "number") {

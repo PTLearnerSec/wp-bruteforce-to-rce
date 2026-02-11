@@ -4,6 +4,7 @@ import * as cheerio from 'cheerio'
 import { appConfig } from '../config/appConfig.js'
 import pLimit from 'p-limit'
 import cliProgress from 'cli-progress'
+import path from 'path'
 
 
 /**
@@ -90,7 +91,7 @@ async function xmlLogin(host, xmlData, user, password) {
  */
 async function bruteForcePassword(host, users) {
     const xmlGetUsersBlogData = await utils.readFile('./xml/xmlrpc-getUsersBlog.xml')
-    const pathToWordlist = appConfig.app.rootPath + appConfig.bruteforce.wordlist
+    const pathToWordlist = path.join(appConfig.app.rootPath, appConfig.bruteforce.wordlist)
     const passwordsChunks = await utils.wordlistSplitting(pathToWordlist)
     let admins = []
     let nonAdmins = []
