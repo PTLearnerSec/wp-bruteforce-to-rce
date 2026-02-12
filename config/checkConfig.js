@@ -49,6 +49,6 @@ export function checkConfig() {
             " Could not properly load configuration, please check the \"appConfig.js\" file:\n\t" +
             errorMessages.toString().replaceAll(',', '\n\t')
         )
-        utils.exit(0)
+        utils.exit(1)
     }
 }

@@ -24,7 +24,7 @@ import path from 'path'
 
         if (!isHostReachable) {
             console.error(`${ utils.printCheck.failure() } Host ${ utils.textColoring(host, "yellow") } is not reachable`)
-            utils.exit(0)
+            utils.exit(1)
         } else {
             console.log(`${ utils.printCheck.success() } Host ${ host } is up`)
         }
@@ -40,7 +40,7 @@ import path from 'path'
 
         if (!isXmlRpcReachable) {
             console.error(`${ utils.printCheck.failure() } Could not reach XML-RPC, it might be disabled`)
-            utils.exit(0)
+            utils.exit(1)
         } else {
             console.log(`${ utils.printCheck.success() } XML-RPC is reachable`)
         }
@@ -58,12 +58,12 @@ import path from 'path'
         console.log(`-> Check if ${ utils.textColoring(allCredentials[0].user, 'blue') } has access to plugins`)
         const hasPluginAccess = await plugin.hasPluginAccess(host, loggedCookies)
         if (!hasPluginAccess) {
-            utils.exit(0, `${ utils.printCheck.failure() } User does not have access to plugins`)
+            utils.exit(1, `${ utils.printCheck.failure() } User does not have access to plugins`)
         }
 
         // Generate plugin
         console.log(`-> Generating plugin`)
-        const triggerUrl = await plugin.generatePlugin(host)
+        const triggerUrl = plugin.generatePlugin(host)
         console.log(`${ utils.printCheck.success() } Plugin generated`)
 
         // Upload plugin
