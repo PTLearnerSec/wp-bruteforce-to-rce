@@ -44,14 +44,17 @@ async function generatePlugin(host) {
     let updatedPlugin = utils.strReplace(plugin, chars)
 
     // Zip plugin
-    const zip = new AdmZip()
     const archivePath = path.join(appConfig.app.rootPath, appConfig.app.archivePath)
-    zip.addFile('wp-plugin.php', Buffer.from(updatedPlugin), "utf8")
-    zip.writeZip(archivePath, (err) => {
-        if (err !== null) {
-            throw new Error(`Could not generate plugin archive at: ${ archivePath }`)
-        }
-    })
+
+    // Using try/catch because 'adm-zip' lib has a bug and does not check permission before trying to access a path
+    try {
+        const zip = new AdmZip()
+        zip.addFile('wp-plugin.php', Buffer.from(updatedPlugin), "utf8")
+        zip.writeZip(archivePath)
+    } catch (error) {
+        console.error(`${ utils.printCheck.failure() } Error while trying to generate plugin`)
+        throw new Error(error)
+    }
 
     return `${ host }/?${ param }`
 }

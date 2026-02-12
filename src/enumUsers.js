@@ -23,7 +23,7 @@ async function enumUsersSitemap(host) {
                 const html = await res.text()
                 const authorsLink = html.match(/author\/([^\/]+)/g)
 
-                if (authorsLink.length) {
+                if (authorsLink?.length) {
                     for (let link of authorsLink) {
                         users.push(link.split('/')[1])
                     }
