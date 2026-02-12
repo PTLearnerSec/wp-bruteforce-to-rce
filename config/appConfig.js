@@ -8,14 +8,14 @@ const appConfig = {
         archivePath: '/plugin/wp-plugin.zip'
     },
     host: {
-        url: 'http://localhost/wordpress/'
+        url: process.env.WP_TARGET_URL || ''
     },
     bruteforce: {
         wordlist: '/wordlist/passwords-1000.txt',
         concurrencyLimit: 50,
         userAgent: "WP Test"
     },
-    debug: false,
+    debug: false
 }
 
 

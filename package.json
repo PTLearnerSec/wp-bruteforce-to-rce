@@ -1,6 +1,6 @@
 {
   "name": "wp-bruteforce-to-rce",
-  "version": "0.1",
+  "version": "0.1.2",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +9,9 @@
   "author": "PTLearnerSec",
   "license": "ISC",
   "description": "NodeJS dirty project to help me during CTFs where a WordPress is involved",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "adm-zip": "^0.5.16",
     "cheerio": "^1.0.0",

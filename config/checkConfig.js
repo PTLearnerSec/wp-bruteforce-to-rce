@@ -22,7 +22,7 @@ export function checkConfig() {
     // host section
     if (!utils.isUrlValid(appConfig.host.url)) {
         errorMessages.push(utils.textColoring('url', 'yellow') + " - URL is invalid: " +
-            utils.textColoring(appConfig.host.url, 'yellow'))
+            utils.textColoring(appConfig.host.url, 'yellow') + ' - Check your .env file')
     }
     // bruteforce section
     if (!fs.existsSync(path.join(rootPath, appConfig.bruteforce.wordlist))) {
@@ -47,7 +47,7 @@ export function checkConfig() {
         console.error(
             utils.printCheck.failure() +
             " Could not properly load configuration, please check the \"appConfig.js\" file:\n\t" +
-            errorMessages.toString().replaceAll(',', '\n\t')
+            errorMessages.join('\n\t')
         )
         utils.exit(1)
     }

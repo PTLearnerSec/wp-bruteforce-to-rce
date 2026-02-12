@@ -3,3 +3,9 @@ node_modules/
 
 # IDE project files
 .idea
+
+# Environment variables
+.env
+
+# Project files
+/plugin/*.zip
