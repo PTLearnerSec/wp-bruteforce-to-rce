@@ -107,7 +107,7 @@ async function enumUsersById(host, i, users) {
             utils.logging.error(error)
         }
 
-        return  _users
+        return _users
     }
 
     return _users

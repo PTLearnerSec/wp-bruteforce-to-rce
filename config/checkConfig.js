@@ -31,15 +31,15 @@ export function checkConfig() {
             + utils.textColoring(path.join(rootPath, appConfig.bruteforce.wordlist), 'yellow')
         )
     }
-    if (typeof(appConfig.bruteforce.concurrencyLimit) !== "number") {
-        errorMessages.push(`"${ utils.textColoring('concurrencyLimit', 'yellow')}" - Should be an integer`)
+    if (typeof (appConfig.bruteforce.concurrencyLimit) !== "number") {
+        errorMessages.push(`"${ utils.textColoring('concurrencyLimit', 'yellow') }" - Should be an integer`)
     }
-    if (typeof(appConfig.bruteforce.userAgent) !== "string") {
-        errorMessages.push(`"${ utils.textColoring('userAgent', 'yellow')}" - Should be a string`)
+    if (typeof (appConfig.bruteforce.userAgent) !== "string") {
+        errorMessages.push(`"${ utils.textColoring('userAgent', 'yellow') }" - Should be a string`)
     }
     // debug section
-    if (typeof(appConfig.debug) !== "boolean") {
-        errorMessages.push(`"${ utils.textColoring('debug', 'yellow')}" - Should be a boolean`)
+    if (typeof (appConfig.debug) !== "boolean") {
+        errorMessages.push(`"${ utils.textColoring('debug', 'yellow') }" - Should be a boolean`)
     }
 
 

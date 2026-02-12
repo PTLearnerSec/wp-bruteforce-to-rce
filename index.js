@@ -1,7 +1,7 @@
 import * as utils from './lib/utils.js'
 import { getUsers } from './src/enumUsers.js'
 import * as plugin from './src/plugin.js'
-import { isXmlRpcEnable, bruteForcePassword  } from './src/xml-rpc.js'
+import { isXmlRpcEnable, bruteForcePassword } from './src/xml-rpc.js'
 import { login } from './src/login.js'
 import { checkConfig } from './config/checkConfig.js'
 import { appConfig } from './config/appConfig.js'
