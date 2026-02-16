@@ -38,8 +38,9 @@ npm install
 
 ***Configuration:***
 
-- Open .env file 
-  - WP_TARGET_URL=<string>
+- Create or open .env file 
+  - `WP_TARGET_URL`=\<string\> Host
+  - `PROXY_URL`=\<string\> Host AND port
 
 - Open `config/appConfig.js` and put the relevant information
     - `app`
@@ -75,11 +76,11 @@ One password list is already in the `wordlist` directory, you can find more in t
 Make user enumeration harder:
 - Restrict access to `/wp-json/`  API REST for non-authenticated users
 - Remove author sitemap
-- Unset `author_url` fields from ``oEmbed`` response data
+- Unset `author_url` fields from `oEmbed` response data
 
 Make brute forcing harder:
 - Use strong password
-- Disable ``XLM-RPC`` if not necessary for backward compatibility
+- Disable `XLM-RPC` if not necessary for backward compatibility
 - Watch out for brute force attack by limiting the number of login attempts using IP ban or timeout. Using captcha could also be helpful.
 
 General advice:
