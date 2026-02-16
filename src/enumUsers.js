@@ -23,7 +23,7 @@ async function enumUsersSitemap(host) {
                 const html = await res.text()
                 const authorsLink = html.match(/author\/([^\/]+)/g)
 
-                if (authorsLink.length) {
+                if (authorsLink?.length) {
                     for (let link of authorsLink) {
                         users.push(link.split('/')[1])
                     }
@@ -71,40 +71,44 @@ async function enumUsersApi(host) {
 }
 
 /**
- * Recursive function to enumerate users by index
+ * Enumerate users by iterating author IDs
+ * Tolerates gaps by allowing consecutive misses before stopping
  *
  * @async
  * @param {string} host
- * @param {number} i - Current index
- * @param {array<string>} users - List of users
  * @returns {Promise<array<string>>}
  */
-async function enumUsersById(host, i, users) {
-    let index = i || 1
-    let _users = users || []
-    let endpoint = host + '/?author=' + index
+async function enumUsersById(host) {
+    const users = []
+    // If a user is deleted it create a gap between the ids
+    const maxConsecutiveMisses = 10
+    let consecutiveMisses = 0
 
-    try {
-        const res = await fetch(endpoint)
-        // if user id does not exist
-        if (!res.ok) {
-            return _users
-        }
+    for (let id = 1; consecutiveMisses < maxConsecutiveMisses; id++) {
+        try {
+            const res = await fetch(host + '/?author=' + id)
 
-        const html = await res.text()
-        const $ = await cheerio.load(html)
-        index++
-        _users.push($('body')[0].attribs.class.split('author-')[1].trim())
-        await enumUsersById(host, index, _users)
-    } catch (error) {
-        if (error.status !== 404) {
+            if (!res.ok) {
+                consecutiveMisses++
+                continue
+            }
+
+            consecutiveMisses = 0
+            const html = await res.text()
+            const $ = cheerio.load(html)
+            const bodyClass = $('body').attr('class') || ''
+            const authorMatch = bodyClass.split('author-')[1]
+
+            if (authorMatch) {
+                users.push(authorMatch.trim().split(' ')[0])
+            }
+        } catch (error) {
+            consecutiveMisses++
             utils.logging.error(error)
         }
-
-        return  _users
     }
 
-    return _users
+    return users
 }
 
 /**
@@ -124,7 +128,7 @@ async function getUsers(host) {
             sitemapUsersRes
         ] = await Promise.allSettled([
             enumUsersApi(host),
-            enumUsersById(host, 1, null),
+            enumUsersById(host),
             enumUsersSitemap(host)
         ])
 

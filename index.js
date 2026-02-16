@@ -1,7 +1,7 @@
 import * as utils from './lib/utils.js'
 import { getUsers } from './src/enumUsers.js'
 import * as plugin from './src/plugin.js'
-import { isXmlRpcEnable, bruteForcePassword  } from './src/xml-rpc.js'
+import { isXmlRpcEnable, bruteForcePassword } from './src/xml-rpc.js'
 import { login } from './src/login.js'
 import { checkConfig } from './config/checkConfig.js'
 import { appConfig } from './config/appConfig.js'
@@ -24,7 +24,7 @@ import path from 'path'
 
         if (!isHostReachable) {
             console.error(`${ utils.printCheck.failure() } Host ${ utils.textColoring(host, "yellow") } is not reachable`)
-            utils.exit(0)
+            utils.exit(1)
         } else {
             console.log(`${ utils.printCheck.success() } Host ${ host } is up`)
         }
@@ -40,7 +40,7 @@ import path from 'path'
 
         if (!isXmlRpcReachable) {
             console.error(`${ utils.printCheck.failure() } Could not reach XML-RPC, it might be disabled`)
-            utils.exit(0)
+            utils.exit(1)
         } else {
             console.log(`${ utils.printCheck.success() } XML-RPC is reachable`)
         }
@@ -58,7 +58,7 @@ import path from 'path'
         console.log(`-> Check if ${ utils.textColoring(allCredentials[0].user, 'blue') } has access to plugins`)
         const hasPluginAccess = await plugin.hasPluginAccess(host, loggedCookies)
         if (!hasPluginAccess) {
-            utils.exit(0, `${ utils.printCheck.failure() } User does not have access to plugins`)
+            utils.exit(1, `${ utils.printCheck.failure() } User does not have access to plugins`)
         }
 
         // Generate plugin

@@ -20,7 +20,7 @@ This is a quick and little project aimed to be a penetration testing tool. It au
 
 ## Requirements
 
-Requires NodeJS `>=18.17`
+Requires NodeJS `>=22`
 
 <br />
 
@@ -37,6 +37,9 @@ npm install
 ## Usage
 
 ***Configuration:***
+
+- Open .env file 
+  - WP_TARGET_URL=<string>
 
 - Open `config/appConfig.js` and put the relevant information
     - `app`
@@ -55,7 +58,7 @@ npm install
 ***Run:***
 
 ```bash
-node index.js
+node --env-file=.env index.js
 ```
 
 <br />

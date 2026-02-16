@@ -44,14 +44,17 @@ async function generatePlugin(host) {
     let updatedPlugin = utils.strReplace(plugin, chars)
 
     // Zip plugin
-    const zip = new AdmZip()
     const archivePath = path.join(appConfig.app.rootPath, appConfig.app.archivePath)
-    zip.addFile('wp-plugin.php', Buffer.from(updatedPlugin), "utf8")
-    zip.writeZip(archivePath, (err) => {
-        if (err !== null) {
-            throw new Error(`Could not generate plugin archive at: ${ archivePath }`)
-        }
-    })
+
+    // Using try/catch because 'adm-zip' lib has a bug and does not check permission before trying to access a path
+    try {
+        const zip = new AdmZip()
+        zip.addFile('wp-plugin.php', Buffer.from(updatedPlugin), "utf8")
+        zip.writeZip(archivePath)
+    } catch (error) {
+        console.error(`${ utils.printCheck.failure() } Error while trying to generate plugin`)
+        throw new Error(error)
+    }
 
     return `${ host }/?${ param }`
 }
@@ -76,6 +79,11 @@ async function uploadPlugin(host, cookies) {
     const $ = cheerio.load(html)
     const wpNonce = $('#_wpnonce').attr('value')
 
+    if (!wpNonce) {
+        console.error(`${ utils.printCheck.failure() } Could not set _wpnonce to access plugins page.`)
+        throw new Error("Could not upload set _wpnonce to access plugins.")
+    }
+
     // Upload plugin
     const endpoint = '/wp-admin/update.php?action=upload-plugin'
     const archivePath = path.join(appConfig.app.rootPath, appConfig.app.archivePath)
@@ -96,7 +104,7 @@ async function uploadPlugin(host, cookies) {
         body
     })
     const text = await postPluginResponse.text()
-    const $_postPluginResponse = await cheerio.load(text)
+    const $_postPluginResponse = cheerio.load(text)
 
     if (!postPluginResponse.ok) {
         console.error(`${ utils.printCheck.failure() } Could not upload plugin, user probably does not have the right`)
@@ -131,7 +139,7 @@ async function enablePlugin(host, activatePluginLink, cookies, pluginName) {
         headers: { 'Cookie': cookies }
     })
     const activatePluginResText = await activatePlugin.text()
-    const $_activatePluginResText = await cheerio.load(activatePluginResText)
+    const $_activatePluginResText = cheerio.load(activatePluginResText)
 
     if ($_activatePluginResText(`[data-slug="${ pluginName }"]`).length === 0) {
         throw new Error(`Plugin activation failed.`)

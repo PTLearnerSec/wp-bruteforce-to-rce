@@ -22,7 +22,7 @@ export function checkConfig() {
     // host section
     if (!utils.isUrlValid(appConfig.host.url)) {
         errorMessages.push(utils.textColoring('url', 'yellow') + " - URL is invalid: " +
-            utils.textColoring(appConfig.host.url, 'yellow'))
+            utils.textColoring(appConfig.host.url, 'yellow') + ' - Check your .env file')
     }
     // bruteforce section
     if (!fs.existsSync(path.join(rootPath, appConfig.bruteforce.wordlist))) {
@@ -31,15 +31,15 @@ export function checkConfig() {
             + utils.textColoring(path.join(rootPath, appConfig.bruteforce.wordlist), 'yellow')
         )
     }
-    if (typeof(appConfig.bruteforce.concurrencyLimit) !== "number") {
-        errorMessages.push(`"${ utils.textColoring('concurrencyLimit', 'yellow')}" - Should be an integer`)
+    if (typeof (appConfig.bruteforce.concurrencyLimit) !== "number") {
+        errorMessages.push(`"${ utils.textColoring('concurrencyLimit', 'yellow') }" - Should be an integer`)
     }
-    if (typeof(appConfig.bruteforce.userAgent) !== "string") {
-        errorMessages.push(`"${ utils.textColoring('userAgent', 'yellow')}" - Should be a string`)
+    if (typeof (appConfig.bruteforce.userAgent) !== "string") {
+        errorMessages.push(`"${ utils.textColoring('userAgent', 'yellow') }" - Should be a string`)
     }
     // debug section
-    if (typeof(appConfig.debug) !== "boolean") {
-        errorMessages.push(`"${ utils.textColoring('debug', 'yellow')}" - Should be a boolean`)
+    if (typeof (appConfig.debug) !== "boolean") {
+        errorMessages.push(`"${ utils.textColoring('debug', 'yellow') }" - Should be a boolean`)
     }
 
 
@@ -47,8 +47,8 @@ export function checkConfig() {
         console.error(
             utils.printCheck.failure() +
             " Could not properly load configuration, please check the \"appConfig.js\" file:\n\t" +
-            errorMessages.toString().replaceAll(',', '\n\t')
+            errorMessages.join('\n\t')
         )
-        utils.exit(0)
+        utils.exit(1)
     }
 }
