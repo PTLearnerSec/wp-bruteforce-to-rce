@@ -79,6 +79,11 @@ async function uploadPlugin(host, cookies) {
     const $ = cheerio.load(html)
     const wpNonce = $('#_wpnonce').attr('value')
 
+    if (!wpNonce) {
+        console.error(`${ utils.printCheck.failure() } Could not set _wpnonce to access plugins page.`)
+        throw new Error("Could not upload set _wpnonce to access plugins.")
+    }
+
     // Upload plugin
     const endpoint = '/wp-admin/update.php?action=upload-plugin'
     const archivePath = path.join(appConfig.app.rootPath, appConfig.app.archivePath)

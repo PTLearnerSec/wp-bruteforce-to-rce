@@ -63,7 +63,7 @@ import path from 'path'
 
         // Generate plugin
         console.log(`-> Generating plugin`)
-        const triggerUrl = plugin.generatePlugin(host)
+        const triggerUrl = await plugin.generatePlugin(host)
         console.log(`${ utils.printCheck.success() } Plugin generated`)
 
         // Upload plugin
