@@ -17,7 +17,7 @@ async function enumUsersSitemap(host) {
     for (let endpoint of endpoints) {
         try {
             const url = host + endpoint
-            const res = await fetch(url, { agent: utils.proxyAgent })
+            const res = await fetch(url, { headers: utils.defaultHeaders(), agent: utils.proxyAgent })
 
             if (res.status === 200 && res.headers.get('content-type') === 'application/xml') {
                 const html = await res.text()
@@ -51,7 +51,7 @@ async function enumUsersApi(host) {
     for (let endpoint of endpoints) {
         try {
             const url = host + endpoint
-            const res = await fetch(url, { agent: utils.proxyAgent })
+            const res = await fetch(url, { headers: utils.defaultHeaders(), agent: utils.proxyAgent })
 
             if (res.status === 200 && res.headers.get('content-type').includes('json')) {
                 const usersApi = await res.json()
@@ -86,7 +86,9 @@ async function enumUsersById(host) {
 
     for (let id = 1; consecutiveMisses < maxConsecutiveMisses; id++) {
         try {
-            const res = await fetch(host + '/?author=' + id, { agent: utils.proxyAgent })
+            const res = await fetch(host + '/?author=' + id,
+                { headers: utils.defaultHeaders(), agent: utils.proxyAgent }
+            )
 
             if (!res.ok) {
                 consecutiveMisses++

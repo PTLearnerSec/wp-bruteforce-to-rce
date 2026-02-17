@@ -38,9 +38,10 @@ npm install
 
 ***Configuration:***
 
-- Create or open .env file 
+- Create or open .env file
   - `WP_TARGET_URL`=\<string\> Host
   - `PROXY_URL`=\<string\> Host AND port
+  - `USER_AGENT`=\<string\> Custom User-Agent header sent with every request (default: "CTF USER_AGENT")
 
 - Open `config/appConfig.js` and put the relevant information
     - `app`

@@ -19,7 +19,7 @@ async function isXmlRpcEnable(host) {
         const xmlGetUsersBlogData = await utils.readFile('./xml/xmlrpc-sayHello.xml')
         const response = await fetch(host + '/xmlrpc.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/xml' },
+            headers: { ...utils.defaultHeaders(), 'Content-Type': 'application/xml' },
             body: xmlGetUsersBlogData,
             agent: utils.proxyAgent
         })
@@ -53,8 +53,8 @@ async function xmlLogin(host, xmlData, user, password, signal) {
         const response = await fetch(host + '/xmlrpc.php', {
             method: 'POST',
             headers: {
+                ...utils.defaultHeaders(),
                 'Content-Type': 'application/xml',
-                'User-Agent': appConfig.bruteforce.userAgent
             },
             body: xmlGetUsersBody,
             signal,

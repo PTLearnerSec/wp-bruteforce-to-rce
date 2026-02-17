@@ -13,7 +13,7 @@ const appConfig = {
     bruteforce: {
         wordlist: '/wordlist/passwords-1000.txt',
         concurrencyLimit: 50,
-        userAgent: "WP Test"
+        userAgent: process.env.USER_AGENT || "CTF USER_AGENT"
     },
     proxy: {
         url: process.env.PROXY_URL || ''
