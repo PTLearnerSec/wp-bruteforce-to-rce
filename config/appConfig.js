@@ -15,6 +15,9 @@ const appConfig = {
         concurrencyLimit: 50,
         userAgent: "WP Test"
     },
+    proxy: {
+        url: process.env.PROXY_URL || ''
+    },
     debug: false
 }
 

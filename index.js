@@ -16,7 +16,18 @@ import path from 'path'
         console.log(`-> Checking configuration`)
         checkConfig()
         const host = appConfig.host.url
+        const proxy = appConfig.proxy.url
         console.log(`${ utils.printCheck.success() } Configuration loaded`)
+
+        // Check proxy
+        if (proxy) {
+            console.log(`-> Checking if proxy is up`)
+
+            if (!await utils.isProxyReachable(proxy)) {
+                utils.exit(1)
+            }
+            console.log(`${ utils.printCheck.success() } Proxy: ${ utils.textColoring(proxy, 'blue') } is up`)
+        }
 
         // Check if host is up
         console.log(`-> Checking if host is up`)

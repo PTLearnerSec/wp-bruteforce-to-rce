@@ -16,7 +16,8 @@ import path from 'path'
  */
 async function hasPluginAccess(host, cookies) {
     const res = await fetch(`${ host }/wp-admin/plugins.php`, {
-        headers: { 'Cookie': cookies }
+        headers: { 'Cookie': cookies },
+        agent: utils.proxyAgent
     })
 
     return res.status === 200
@@ -72,7 +73,8 @@ async function uploadPlugin(host, cookies) {
     const pluginName = 'my-plugin'
 
     const getPluginRes = await fetch(host + '/wp-admin/plugin-install.php', {
-        headers: { 'Cookie': cookies }
+        headers: { 'Cookie': cookies },
+        agent: utils.proxyAgent
     })
     // Extract wpNonce
     const html = await getPluginRes.text()
@@ -101,7 +103,8 @@ async function uploadPlugin(host, cookies) {
             'Cookie': cookies,
             'Referer': `${ host }/wp-admin/plugin-install.php`
         },
-        body
+        body,
+        agent: utils.proxyAgent
     })
     const text = await postPluginResponse.text()
     const $_postPluginResponse = cheerio.load(text)
@@ -136,7 +139,8 @@ async function uploadPlugin(host, cookies) {
  */
 async function enablePlugin(host, activatePluginLink, cookies, pluginName) {
     const activatePlugin = await fetch(`${ host }/wp-admin/${ activatePluginLink }`, {
-        headers: { 'Cookie': cookies }
+        headers: { 'Cookie': cookies },
+        agent: utils.proxyAgent
     })
     const activatePluginResText = await activatePlugin.text()
     const $_activatePluginResText = cheerio.load(activatePluginResText)

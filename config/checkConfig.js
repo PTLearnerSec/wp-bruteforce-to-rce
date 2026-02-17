@@ -37,11 +37,15 @@ export function checkConfig() {
     if (typeof (appConfig.bruteforce.userAgent) !== "string") {
         errorMessages.push(`"${ utils.textColoring('userAgent', 'yellow') }" - Should be a string`)
     }
+    // proxy section
+    if (appConfig.proxy.url && !utils.isProxyUrlValid(appConfig.proxy.url)) {
+        errorMessages.push(utils.textColoring('proxy.url', 'yellow') + " - Proxy URL is invalid: " +
+            utils.textColoring(appConfig.proxy.url, 'yellow'))
+    }
     // debug section
     if (typeof (appConfig.debug) !== "boolean") {
         errorMessages.push(`"${ utils.textColoring('debug', 'yellow') }" - Should be a boolean`)
     }
-
 
     if (errorMessages.length) {
         console.error(

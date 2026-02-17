@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { printCheck } from '../lib/utils.js'
+import { printCheck, proxyAgent } from '../lib/utils.js'
 import * as cheerio from 'cheerio'
 
 
@@ -28,7 +28,8 @@ async function login(host, user, password) {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Cookie': cookie
         },
-        redirect: 'manual'
+        redirect: 'manual',
+        agent: proxyAgent
     })
 
     // WP returns 302 redirect if login succeeded and 200 if it did not

@@ -20,7 +20,8 @@ async function isXmlRpcEnable(host) {
         const response = await fetch(host + '/xmlrpc.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/xml' },
-            body: xmlGetUsersBlogData
+            body: xmlGetUsersBlogData,
+            agent: utils.proxyAgent
         })
         // Parse XML file
         const text = await response.text()
@@ -56,7 +57,8 @@ async function xmlLogin(host, xmlData, user, password, signal) {
                 'User-Agent': appConfig.bruteforce.userAgent
             },
             body: xmlGetUsersBody,
-            signal
+            signal,
+            agent: utils.proxyAgent
         })
 
         // Parse XML file
