@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { printCheck, proxyAgent } from '../lib/utils.js'
+import { printCheck, proxyAgent, defaultHeaders } from '../lib/utils.js'
 import * as cheerio from 'cheerio'
 
 
@@ -25,6 +25,7 @@ async function login(host, user, password) {
         method: 'POST',
         body,
         headers: {
+            ...defaultHeaders(),
             'Content-Type': 'application/x-www-form-urlencoded',
             'Cookie': cookie
         },
