@@ -20,7 +20,7 @@ This is a quick and little project aimed to be a penetration testing tool. It au
 
 ## Requirements
 
-Requires NodeJS `>=18.17`
+Requires NodeJS `>=22`
 
 <br />
 
@@ -37,6 +37,11 @@ npm install
 ## Usage
 
 ***Configuration:***
+
+- Create or open .env file
+  - `WP_TARGET_URL`=\<string\> Host
+  - `PROXY_URL`=\<string\> Host AND port
+  - `USER_AGENT`=\<string\> Custom User-Agent header sent with every request (default: "CTF USER_AGENT")
 
 - Open `config/appConfig.js` and put the relevant information
     - `app`
@@ -55,7 +60,7 @@ npm install
 ***Run:***
 
 ```bash
-node index.js
+node --env-file=.env index.js
 ```
 
 <br />
@@ -72,11 +77,11 @@ One password list is already in the `wordlist` directory, you can find more in t
 Make user enumeration harder:
 - Restrict access to `/wp-json/`  API REST for non-authenticated users
 - Remove author sitemap
-- Unset `author_url` fields from ``oEmbed`` response data
+- Unset `author_url` fields from `oEmbed` response data
 
 Make brute forcing harder:
 - Use strong password
-- Disable ``XLM-RPC`` if not necessary for backward compatibility
+- Disable `XLM-RPC` if not necessary for backward compatibility
 - Watch out for brute force attack by limiting the number of login attempts using IP ban or timeout. Using captcha could also be helpful.
 
 General advice:

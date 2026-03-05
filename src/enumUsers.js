@@ -17,13 +17,13 @@ async function enumUsersSitemap(host) {
     for (let endpoint of endpoints) {
         try {
             const url = host + endpoint
-            const res = await fetch(url)
+            const res = await fetch(url, { headers: utils.defaultHeaders(), agent: utils.proxyAgent })
 
             if (res.status === 200 && res.headers.get('content-type') === 'application/xml') {
                 const html = await res.text()
                 const authorsLink = html.match(/author\/([^\/]+)/g)
 
-                if (authorsLink.length) {
+                if (authorsLink?.length) {
                     for (let link of authorsLink) {
                         users.push(link.split('/')[1])
                     }
@@ -51,7 +51,7 @@ async function enumUsersApi(host) {
     for (let endpoint of endpoints) {
         try {
             const url = host + endpoint
-            const res = await fetch(url)
+            const res = await fetch(url, { headers: utils.defaultHeaders(), agent: utils.proxyAgent })
 
             if (res.status === 200 && res.headers.get('content-type').includes('json')) {
                 const usersApi = await res.json()
@@ -71,40 +71,46 @@ async function enumUsersApi(host) {
 }
 
 /**
- * Recursive function to enumerate users by index
+ * Enumerate users by iterating author IDs
+ * Tolerates gaps by allowing consecutive misses before stopping
  *
  * @async
  * @param {string} host
- * @param {number} i - Current index
- * @param {array<string>} users - List of users
  * @returns {Promise<array<string>>}
  */
-async function enumUsersById(host, i, users) {
-    let index = i || 1
-    let _users = users || []
-    let endpoint = host + '/?author=' + index
+async function enumUsersById(host) {
+    const users = []
+    // If a user is deleted it create a gap between the ids
+    const maxConsecutiveMisses = 10
+    let consecutiveMisses = 0
 
-    try {
-        const res = await fetch(endpoint)
-        // if user id does not exist
-        if (!res.ok) {
-            return _users
-        }
+    for (let id = 1; consecutiveMisses < maxConsecutiveMisses; id++) {
+        try {
+            const res = await fetch(host + '/?author=' + id,
+                { headers: utils.defaultHeaders(), agent: utils.proxyAgent }
+            )
 
-        const html = await res.text()
-        const $ = await cheerio.load(html)
-        index++
-        _users.push($('body')[0].attribs.class.split('author-')[1].trim())
-        await enumUsersById(host, index, _users)
-    } catch (error) {
-        if (error.status !== 404) {
+            if (!res.ok) {
+                consecutiveMisses++
+                continue
+            }
+
+            consecutiveMisses = 0
+            const html = await res.text()
+            const $ = cheerio.load(html)
+            const bodyClass = $('body').attr('class') || ''
+            const authorMatch = bodyClass.split('author-')[1]
+
+            if (authorMatch) {
+                users.push(authorMatch.trim().split(' ')[0])
+            }
+        } catch (error) {
+            consecutiveMisses++
             utils.logging.error(error)
         }
-
-        return  _users
     }
 
-    return _users
+    return users
 }
 
 /**
@@ -118,18 +124,29 @@ async function getUsers(host) {
     console.log(`-> Starting user enumeration ...`)
 
     try {
-        const apiUsers = await enumUsersApi(host)
-        const idUsers = await enumUsersById(host, 1, null)
-        const siteMapUsers = await enumUsersSitemap(host)
+        const [
+            apiUsersRes,
+            idUsersRes,
+            sitemapUsersRes
+        ] = await Promise.allSettled([
+            enumUsersApi(host),
+            enumUsersById(host),
+            enumUsersSitemap(host)
+        ])
+
+        const apiUsers = apiUsersRes.status === "fulfilled" ? apiUsersRes.value : []
+        const idUsers = idUsersRes.status === "fulfilled" ? idUsersRes.value : []
+        const siteMapUsers = sitemapUsersRes.status === "fulfilled" ? sitemapUsersRes.value : []
 
         if (!apiUsers.length && !idUsers.length && !siteMapUsers.length) {
             console.error(`${ utils.printCheck.failure() } No user was found`)
-            utils.exit(0)
+            utils.exit(1)
         }
 
         return utils.uniq(apiUsers.concat(idUsers, siteMapUsers))
     } catch (error) {
         utils.logging.error(error)
+        utils.exit(1)
     }
 }
 

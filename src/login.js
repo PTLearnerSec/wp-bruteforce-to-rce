@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { printCheck } from '../lib/utils.js'
+import { printCheck, proxyAgent, defaultHeaders } from '../lib/utils.js'
 import * as cheerio from 'cheerio'
 
 
@@ -13,16 +13,24 @@ import * as cheerio from 'cheerio'
  * @returns {Promise<string>} - Session cookies
  */
 async function login(host, user, password) {
-    const body = `log=${ user }&pwd=${password}&wp-submit=Log+in&redirect_to=http%3A%2F%2F${ host }%2Fwp-admin%2F&testcookie=1`
+    const body = new URLSearchParams({
+        log: user,
+        pwd: password,
+        'wp-submit': 'Log in',
+        redirect_to: `${ host }/wp-admin/`,
+        testcookie: '1'
+    })
     const cookie = 'wordpress_test_cookie=WP%20Cookie%20check;'
     const response = await fetch(host + '/wp-login.php', {
         method: 'POST',
         body,
         headers: {
+            ...defaultHeaders(),
             'Content-Type': 'application/x-www-form-urlencoded',
             'Cookie': cookie
         },
-        redirect: 'manual'
+        redirect: 'manual',
+        agent: proxyAgent
     })
 
     // WP returns 302 redirect if login succeeded and 200 if it did not

@@ -1,6 +1,7 @@
 import fs from 'fs'
 import * as utils from '../lib/utils.js'
 import { appConfig } from './appConfig.js'
+import path from 'path'
 
 
 /**
@@ -12,42 +13,46 @@ export function checkConfig() {
     let errorMessages = []
 
     // app section
-    if (!fs.existsSync(rootPath + appConfig.app.pluginFilePath)) {
+    if (!fs.existsSync(path.join(rootPath, appConfig.app.pluginFilePath))) {
         errorMessages.push(utils.textColoring('pluginFilePath', 'yellow') +
             " - Could not find or access file to generate plugin: " +
-            utils.textColoring(rootPath + appConfig.app.pluginFilePath, 'yellow')
+            utils.textColoring(path.join(rootPath, appConfig.app.pluginFilePath), 'yellow')
         )
     }
     // host section
     if (!utils.isUrlValid(appConfig.host.url)) {
         errorMessages.push(utils.textColoring('url', 'yellow') + " - URL is invalid: " +
-            utils.textColoring(appConfig.host.url, 'yellow'))
+            utils.textColoring(appConfig.host.url, 'yellow') + ' - Check your .env file')
     }
     // bruteforce section
-    if (!fs.existsSync(rootPath + appConfig.bruteforce.wordlist)) {
+    if (!fs.existsSync(path.join(rootPath, appConfig.bruteforce.wordlist))) {
         errorMessages.push(utils.textColoring('wordlist', 'yellow') +
             " - Could not find or access wordlist: "
-            + utils.textColoring(rootPath + appConfig.bruteforce.wordlist, 'yellow')
+            + utils.textColoring(path.join(rootPath, appConfig.bruteforce.wordlist), 'yellow')
         )
     }
-    if (typeof(appConfig.bruteforce.concurrencyLimit) !== "number") {
-        errorMessages.push(`"${ utils.textColoring('concurrencyLimit', 'yellow')}" - Should be an integer`)
+    if (typeof (appConfig.bruteforce.concurrencyLimit) !== "number") {
+        errorMessages.push(`"${ utils.textColoring('concurrencyLimit', 'yellow') }" - Should be an integer`)
     }
-    if (typeof(appConfig.bruteforce.userAgent) !== "string") {
-        errorMessages.push(`"${ utils.textColoring('userAgent', 'yellow')}" - Should be a string`)
+    if (typeof (appConfig.bruteforce.userAgent) !== "string") {
+        errorMessages.push(`"${ utils.textColoring('userAgent', 'yellow') }" - Should be a string`)
+    }
+    // proxy section
+    if (appConfig.proxy.url && !utils.isProxyUrlValid(appConfig.proxy.url)) {
+        errorMessages.push(utils.textColoring('proxy.url', 'yellow') + " - Proxy URL is invalid: " +
+            utils.textColoring(appConfig.proxy.url, 'yellow'))
     }
     // debug section
-    if (typeof(appConfig.debug) !== "boolean") {
-        errorMessages.push(`"${ utils.textColoring('debug', 'yellow')}" - Should be a boolean`)
+    if (typeof (appConfig.debug) !== "boolean") {
+        errorMessages.push(`"${ utils.textColoring('debug', 'yellow') }" - Should be a boolean`)
     }
-
 
     if (errorMessages.length) {
         console.error(
             utils.printCheck.failure() +
             " Could not properly load configuration, please check the \"appConfig.js\" file:\n\t" +
-            errorMessages.toString().replaceAll(',', '\n\t')
+            errorMessages.join('\n\t')
         )
-        utils.exit(0)
+        utils.exit(1)
     }
 }

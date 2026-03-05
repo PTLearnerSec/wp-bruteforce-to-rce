@@ -1,10 +1,11 @@
 import * as utils from './lib/utils.js'
 import { getUsers } from './src/enumUsers.js'
 import * as plugin from './src/plugin.js'
-import { isXmlRpcEnable, bruteForcePassword  } from './src/xml-rpc.js'
+import { isXmlRpcEnable, bruteForcePassword } from './src/xml-rpc.js'
 import { login } from './src/login.js'
 import { checkConfig } from './config/checkConfig.js'
 import { appConfig } from './config/appConfig.js'
+import path from 'path'
 
 
 (async function run() {
@@ -15,7 +16,18 @@ import { appConfig } from './config/appConfig.js'
         console.log(`-> Checking configuration`)
         checkConfig()
         const host = appConfig.host.url
+        const proxy = appConfig.proxy.url
         console.log(`${ utils.printCheck.success() } Configuration loaded`)
+
+        // Check proxy
+        if (proxy) {
+            console.log(`-> Checking if proxy is up`)
+
+            if (!await utils.isProxyReachable(proxy)) {
+                utils.exit(1)
+            }
+            console.log(`${ utils.printCheck.success() } Proxy: ${ utils.textColoring(proxy, 'blue') } is up`)
+        }
 
         // Check if host is up
         console.log(`-> Checking if host is up`)
@@ -23,7 +35,7 @@ import { appConfig } from './config/appConfig.js'
 
         if (!isHostReachable) {
             console.error(`${ utils.printCheck.failure() } Host ${ utils.textColoring(host, "yellow") } is not reachable`)
-            utils.exit(0)
+            utils.exit(1)
         } else {
             console.log(`${ utils.printCheck.success() } Host ${ host } is up`)
         }
@@ -39,7 +51,7 @@ import { appConfig } from './config/appConfig.js'
 
         if (!isXmlRpcReachable) {
             console.error(`${ utils.printCheck.failure() } Could not reach XML-RPC, it might be disabled`)
-            utils.exit(0)
+            utils.exit(1)
         } else {
             console.log(`${ utils.printCheck.success() } XML-RPC is reachable`)
         }
@@ -57,7 +69,7 @@ import { appConfig } from './config/appConfig.js'
         console.log(`-> Check if ${ utils.textColoring(allCredentials[0].user, 'blue') } has access to plugins`)
         const hasPluginAccess = await plugin.hasPluginAccess(host, loggedCookies)
         if (!hasPluginAccess) {
-            utils.exit(0, `${ utils.printCheck.failure() } User does not have access to plugins`)
+            utils.exit(1, `${ utils.printCheck.failure() } User does not have access to plugins`)
         }
 
         // Generate plugin
@@ -77,11 +89,11 @@ import { appConfig } from './config/appConfig.js'
         console.log(`${ utils.printCheck.success() } Payload available at: ${ triggerUrl }`)
 
         // Remove local zip archive
-        await utils.removeFile(appConfig.app.rootPath + appConfig.app.archivePath)
+        await utils.removeFile(path.join(appConfig.app.rootPath, appConfig.app.archivePath))
 
         utils.exit(0)
     } catch (error) {
-        await utils.removeFile(appConfig.app.rootPath + appConfig.app.archivePath)
+        await utils.removeFile(path.join(appConfig.app.rootPath, appConfig.app.archivePath))
         utils.logging.error(error)
 
         utils.exit(1)
